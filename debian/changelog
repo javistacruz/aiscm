@@ -1,8 +1,49 @@
+aiscm (0.9.1-1) UNRELEASED; urgency=low
+
+  * aiscm/jit.scm: compile code to allocate return values
+  - support for native constants
+  - working on tensor expressions
+
+ -- Jan Wedekind <jan@wedesoft.de>  Fri, 25 Nov 2016 21:53:30 +0000
+
+aiscm (0.8.3-1) UNRELEASED; urgency=low
+
+  - object rgb and object complex values
+  - refactored native method calls
+  - improved docker build
+
+ -- Jan Wedekind <jan@wedesoft.de>  Tue, 25 Oct 2016 18:28:30 +0100
+
+aiscm (0.8.2-1) UNRELEASED; urgency=low
+
+  - temporarily match floating point numbers to objects
+
+ -- Jan Wedekind <jan@wedesoft.de>  Thu, 20 Oct 2016 12:42:05 +0100
+
+aiscm (0.8.1-1) UNRELEASED; urgency=low
+
+  - refactored type conversions
+  - type conversions of method arguments
+
+ -- Jan Wedekind <jan@wedesoft.de>  Wed, 19 Oct 2016 21:03:07 +0100
+
+aiscm (0.7.1-1) UNRELEASED; urgency=low
+
+  * doc/installation.md: updated installation documentation
+  * aiscm/aiscm.xpm: added installation documentation
+  - FFmpeg network stream example
+  - better test video
+  - use re-export statements to make modules more independent
+  - use read-image, read-audio, write-image, and write-audio throughout
+  - renamed "match" to "native-type"
+
+ -- Jan Wedekind <jan@wedesoft.de>  Fri, 16 Sep 2016 17:43:00 +0100
+
 aiscm (0.6.2-2) UNRELEASED; urgency=low
 
   - Make releases for different distros
 
- -- jan wedekind <jan@wedesoft.de>  Wed, 7 Sep 2016 20:10:18 +0100
+ -- Jan Wedekind <jan@wedesoft.de>  Wed, 7 Sep 2016 20:10:18 +0100
 
 aiscm (0.6.2-1) UNRELEASED; urgency=low
 

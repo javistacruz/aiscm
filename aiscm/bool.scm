@@ -5,8 +5,7 @@
   #:use-module (aiscm util)
   #:use-module (aiscm element)
   #:use-module (aiscm scalar)
-  #:export (<bool>
-            <meta<bool>>
+  #:export (<bool> <meta<bool>>
             && || ! !=)
   #:re-export (=))
 (define-class* <bool> <scalar> <meta<bool>> <meta<scalar>>)
@@ -18,9 +17,8 @@
 (define-method (coerce (a <meta<bool>>) (b <meta<bool>>)) <bool>)
 (define-method (write (self <bool>) port)
   (format port "#<<bool> ~a>" (get self)))
-(define-method (match (b <boolean>) . args) (if (every boolean? args) <bool> (next-method)))
-(define-method (build (self <meta<bool>>) value) (make self #:value (not (zero? value))))
-(define-method (content (self <boolean>)) (list (if self 1 0)))
+(define-method (native-type (b <boolean>) . args) (if (every boolean? args) <bool> (next-method)))
+(define-method (unbuild (type <meta<bool>>) self) (list (if self 1 0)))
 (define-method (&& a) a)
 (define-method (&& (a <boolean>) (b <boolean>)) (and a b))
 (define-method (&& a b c . args) (apply && (&& (&& a b) c) args))

@@ -3,7 +3,7 @@
 
 An image can be read from disk using *read-image* which uses the ImageMagick library to load the image.
 
-![](fubk.png "Test input image")
+![fubk.png](fubk.png "Test input image")
 
 ```Scheme
 @../tests/integration/read_image.scm@
@@ -15,7 +15,7 @@ Analogous *write-image* writes an image to disk.
 @../tests/integration/write_image.scm@
 ```
 
-![](scaled-pattern.png "Output image")
+![scaled-pattern.png](scaled-pattern.png "Output image")
 
 ## Xorg display
 ### Images
@@ -27,6 +27,8 @@ As shown above, you can display images using the method *show* as follows:
 ```
 
 One can also display a list of images:
+
+![fubk-colours.png](fubk-colours.png "List of images")
 
 ```Scheme
 @../tests/integration/xorg_image_list.scm@
@@ -54,6 +56,8 @@ Possible types of output are *IO-XIMAGE*, *IO-OPENGL*, and *IO-XVIDEO*.
 ```
 
 ## Video for Linux version 2 (V4L2)
+
+![v4l2.jpg](v4l2.jpg "V4L2 input image")
 
 As shown above already, you can open a camera and grab a frame as follows.
 
@@ -87,6 +91,10 @@ The following example records 3 seconds of audio data and then plays it back.
 
 ## Video files
 
+<div class="figure">
+<video src="av-sync.mp4" controls></video>
+</div>
+
 The following example shows how to use the FFmpeg interface to open and view a video.
 The video presentation time stamps are used to display the video at the correct speed.
 The method *latency* is used to determine the delay of the audio buffer.
@@ -101,10 +109,25 @@ The method *pts=* can be used to seek to an absolute position in audio/video str
 @../tests/integration/pts.scm@
 ```
 
+Note that *FFmpeg* also supports network streaming of video data.
+I.e. the following example will play the [Sintel short film](https://durian.blender.org/) from a web server.
+
+<div class="figure">
+<a href="http://peach.themazzone.com/durian/movies/sintel-1024-surround.mp4"><img src="sintel.jpg" title="Sintel short movie" /></a>
+</div>
+
+```Scheme
+@../tests/integration/ffstream.scm@
+```
+
 ## Audio files
 
-One can play samples from an audio file by passing them to the audio device using the *write-samples* method.
+One can play samples from an audio file by passing them to the audio device using the *write-audio* method.
 It is also possible to pass a function returning consecutive audio samples as shown below.
+
+<div class="figure">
+<audio src="test.mp3" controls></audio>
+</div>
 
 ```Scheme
 @../tests/integration/ffaudio.scm@

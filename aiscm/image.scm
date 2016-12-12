@@ -14,7 +14,9 @@
   #:use-module (aiscm jit)
   #:use-module (aiscm op)
   #:export (<image> <meta<image>>
-            get-format get-mem convert to-image symbol->format format->symbol))
+            get-format get-mem convert to-image symbol->format format->symbol)
+  #:re-export (to-array))
+
 (load-extension "libguile-aiscm-image" "init_image")
 (define-class* <image> <object> <meta<image>> <class>
               (format #:init-keyword #:format #:getter get-format)
@@ -95,7 +97,7 @@
 (define (memalign size alignment)
   (let* [(offset        (1- alignment))
          (extended-size (+ size offset))
-         (mem           (make <mem> #:size extended-size))
+         (mem           (make <mem> #:size extended-size #:pointerless #t))
          (base          (get-memory mem))
          (memory        (make-pointer (logand (+ (pointer-address base) offset) (lognot offset))))]
     (make <mem> #:memory memory #:base base #:size size)))

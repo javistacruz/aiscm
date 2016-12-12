@@ -18,7 +18,7 @@
     (lambda (class metaclass)
       (define-method (initialize (self class) initargs)
         (let-keywords initargs #t (value)
-          (let [(value (or value (make <mem> #:size (size-of target))))]
+          (let [(value (or value (make <mem> #:size (size-of target) #:pointerless (pointerless? target))))]
             (next-method self (list #:value value)))))
       (define-method (typecode (self metaclass)) target))))
 (define-method (write (self <pointer<>>) port)
@@ -39,7 +39,8 @@
 (define-method (pack (self <pointer<>>))
   (pack (make <native-int>
               #:value ((compose pointer-address get-memory get) self))))
-(define-method (content (self <mem>)) (list (pointer-address (get-memory self))))
+(define-method (unbuild (type <meta<pointer<>>>) self) (list (pointer-address (get-memory (get self)))))
+(define-method (content (type <meta<pointer<>>>) (self <pointer<>>)) (list (make <ulong> #:value (get self))))
 (define-method (rebase value (self <pointer<>>)) (make (class-of self) #:value value))
 (define (pointer-cast target self) (make (pointer target) #:value (get self)))
 (define pointer-offset (make-object-property))
@@ -47,4 +48,5 @@
   (let [(retval (make (class-of p) #:value (get p)))]
     (set! (pointer-offset retval) offset)
     retval))
+(define-method (pointerless? (self <meta<pointer<>>>)) (pointerless? (typecode self)))
 (pointer <int<>>)

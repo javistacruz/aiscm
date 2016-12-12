@@ -1,26 +1,53 @@
-# AIScm Reference Manual
+# AIscm Reference Manual
 
-[![GPLv3](https://img.shields.io/github/license/wedesoft/aiscm.png)](https://www.gnu.org/copyleft/gpl.html) [![Travis CI](https://travis-ci.org/wedesoft/aiscm.png?branch=master)](https://travis-ci.org/wedesoft/aiscm) [![GitHub](https://img.shields.io/github/release/wedesoft/aiscm.png)](https://github.com/wedesoft/aiscm/releases) [![Guile 2.0.11](http://img.shields.io/badge/Guile-2.0.11-yellow.png)](http://www.gnu.org/software/guile) [![amd64](http://img.shields.io/badge/architecture-amd64-lightgrey.png)](https://en.wikipedia.org/wiki/X86-64) [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.61752.svg)](http://dx.doi.org/10.5281/zenodo.61752)
+[![GPLv3](https://img.shields.io/github/license/wedesoft/aiscm.png)](https://www.gnu.org/copyleft/gpl.html) [![Travis CI](https://travis-ci.org/wedesoft/aiscm.png?branch=master)](https://travis-ci.org/wedesoft/aiscm) [![GitHub](https://img.shields.io/github/release/wedesoft/aiscm.png)](https://github.com/wedesoft/aiscm/releases) [![Guile 2.0.11](http://img.shields.io/badge/Guile-2.0.11-yellow.png)](http://www.gnu.org/software/guile) [![amd64](http://img.shields.io/badge/architecture-amd64-lightgrey.png)](https://en.wikipedia.org/wiki/X86-64) [![DOI](https://zenodo.org/badge/15473832.svg)](https://zenodo.org/badge/latestdoi/15473832)
 
 This manual is for **AIscm** (version @VERSION@).
 
-[**AIscm**][1] is a **real-time computer vision extension** for the [**Guile programming language**][2].
-Performance in Scheme is achieved by means of a JIT compiler.
+[**AIscm**][1] is a **Guile extension for numerical arrays and tensors**.
+Performance is achieved by means of a JIT compiler.
 
 Control all data and machine code down to every single bit and byte.
 
-![](aiscm.gif "AIScm")
+<div class="figure">
+<p><a href="installation.html" title="Installation"><strong>Installation</strong> <img src="aiscm.gif" alt=""/> <strong>Installation</strong></a></p>
+</div>
 
-* [Installation](installation.html "Installation")
+## Features
+
 * [Built-in assembler](assembler.html "Built-in assembler")
 * [Input/output](io.html "Input/output")
 * [Array operations](array.html "Array operations")
 
-## External Links
+## See also
 
 * [Github page](https://github.com/wedesoft/aiscm)
 * [Gitlab page](https://gitlab.com/wedesoft/aiscm)
 * [Bitbucket page](https://bitbucket.org/wedesoft/aiscm)
+
+## External links
+
+* [Lush: large-scale numerical computing](http://lush.sourceforge.net/)
+* [Vigracket: Vigra bindings for Racket](https://github.com/BSeppke/vigracket)
+* [Torch: Scientific computing for LuaJIT](http://torch.ch/)
+* [Tensorflow: numerical computing with dataflow graphs](https://www.tensorflow.org/)
+* [Numpy: Python library implementing n-dimensional arrays](http://www.numpy.org/)
+* [Theano: Python library for JIT compiled array operations](http://deeplearning.net/software/theano/)
+* [Bergstra et al.: Theano: A CPU and GPU math compiler in Python](http://www.iro.umontreal.ca/~lisa/pointeurs/theano_scipy2010.pdf)
+* [Chainer: A Powerful, Flexible, and Intuitive Framework of Neural Networks](http://chainer.org/)
+* [Ceemple C++ OpenCV IDE](http://www.ceemple.com/)
+* [Arrayfire: accelerated computing library](http://arrayfire.com/)
+* [Halide: a language for image processing and computational photography](http://halide-lang.org/)
+* [PeachPy: Portable assembly for Python](https://github.com/Maratyszcza/PeachPy)
+* [Guile manual](http://www.gnu.org/software/guile/manual/)
+* [GOOPS: object-oriented extension to Guile](https://www.gnu.org/software/goops/)
+* [COOPS: Chicken Scheme object system](http://wiki.call-cc.org/eggref/4/coops)
+* [System V Application Binary Interface](http://www.x86-64.org/documentation/abi.pdf)
+* [Intel® 64 and IA-32 Architectures Software Developer Manuals](http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html)
+* [CLASP: Lisp with LLVM Jit and C++ foreign interface](https://github.com/drmeister/clasp)
+* [Embedded Language for Accelerated Array Computations](https://github.com/AccelerateHS/accelerate)
+* [SymPy: computer algebra in Python](http://www.sympy.org/)
+* [Maxima computer algebra system](http://maxima.sourceforge.net/)
 
 Copyright © 2013, 2014, 2015, 2016 Jan Wedekind.
 

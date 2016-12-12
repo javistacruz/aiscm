@@ -1,13 +1,13 @@
 # [AIscm][1]
 
-[![GPLv3](https://img.shields.io/github/license/wedesoft/aiscm.png)](https://www.gnu.org/copyleft/gpl.html) [![Travis CI](https://travis-ci.org/wedesoft/aiscm.png?branch=master)](https://travis-ci.org/wedesoft/aiscm) [![GitHub](https://img.shields.io/github/release/wedesoft/aiscm.png)](https://github.com/wedesoft/aiscm/releases) [![Guile 2.0.11](http://img.shields.io/badge/Guile-2.0.11-yellow.png)](http://www.gnu.org/software/guile) [![amd64](http://img.shields.io/badge/architecture-amd64-lightgrey.png)](https://en.wikipedia.org/wiki/X86-64) [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.61752.svg)](http://dx.doi.org/10.5281/zenodo.61752)
+[![GPLv3](https://img.shields.io/github/license/wedesoft/aiscm.png)](https://www.gnu.org/copyleft/gpl.html) [![Travis CI](https://travis-ci.org/wedesoft/aiscm.png?branch=master)](https://travis-ci.org/wedesoft/aiscm) [![GitHub](https://img.shields.io/github/release/wedesoft/aiscm.png)](https://github.com/wedesoft/aiscm/releases) [![Guile 2.0.11](http://img.shields.io/badge/Guile-2.0.11-yellow.png)](http://www.gnu.org/software/guile) [![amd64](http://img.shields.io/badge/architecture-amd64-lightgrey.png)](https://en.wikipedia.org/wiki/X86-64) [![DOI](https://zenodo.org/badge/15473832.svg)](https://zenodo.org/badge/latestdoi/15473832)
 
-[**AIscm**][1] is a **real-time computer vision extension** for the [**Guile programming language**][2].
-Performance in Scheme is achieved by means of a JIT compiler.
+[**AIscm**][1] is a **[Guile][2] extension for numerical arrays and tensors**.
+Performance is achieved by means of a JIT compiler.
 
 Control all data and machine code down to every single bit and byte!
 
-![](doc/aiscm.gif "AIscm")
+![AIscm](doc/aiscm.gif "AIscm")
 
 ## Download
 
@@ -83,24 +83,6 @@ make reintegration
 * [AIscm homepage][1]
 * [AIscm installation][6]
 
-# External links
-
-* [Lush: large-scale numerical computing](http://lush.sourceforge.net/)
-* [Torch: Scientific computing for LuaJIT](http://torch.ch/)
-* [Theano: Python library for JIT compiled array operations](http://deeplearning.net/software/theano/)
-* [Bergstra et al.: Theano: A CPU and GPU math compiler in Python][5]
-* [Ceemple C++ OpenCV IDE](http://www.ceemple.com/)
-* [PeachPy: Portable assembly for Python](https://github.com/Maratyszcza/PeachPy)
-* [Guile manual](http://www.gnu.org/software/guile/manual/)
-* [GOOPS: object-oriented extension to Guile](https://www.gnu.org/software/goops/)
-* [COOPS: Chicken Scheme object system](http://wiki.call-cc.org/eggref/4/coops)
-* [System V Application Binary Interface](http://www.x86-64.org/documentation/abi.pdf)
-* [Intel® 64 and IA-32 Architectures Software Developer Manuals](http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html)
-* [CLASP: Lisp with LLVM Jit and C++ foreign interface](https://github.com/drmeister/clasp)
-
 [1]: http://wedesoft.github.io/aiscm/ "AIscm"
 [2]: http://www.gnu.org/software/guile/ "Guile programming language"
-[3]: http://software.opensuse.org/download.html?project=home%3Awedesoft&package=aiscm "AIscm Debian package"
-[4]: https://github.com/wedesoft/aiscm/releases "AIscm source releases"
-[5]: http://www.iro.umontreal.ca/~lisa/pointeurs/theano_scipy2010.pdf "Theano paper"
 [6]: http://wedesoft.github.io/aiscm/installation.html "AIscm installation"

@@ -266,7 +266,7 @@ static SCM decode_audio(struct ffmpeg_t *self, AVPacket *pkt, AVFrame *frame)
   int got_frame;
   int len = avcodec_decode_audio4(self->audio_dec_ctx, frame, &got_frame, pkt);
   if (len < 0)
-    scm_misc_error("ffmpeg-read-audio", "Error decoding frame: ~a", scm_list_1(get_error_text(len)));
+    scm_misc_error("ffmpeg-read-audio/video", "Error decoding frame: ~a", scm_list_1(get_error_text(len)));
   consume_packet_data(pkt, FFMIN(pkt->size, len));
   return got_frame ? list_sample_info(self) : SCM_BOOL_F;
 }
@@ -298,7 +298,7 @@ static SCM decode_video(struct ffmpeg_t *self, AVPacket *pkt, AVFrame *frame)
   int got_frame;
   int len = avcodec_decode_video2(self->video_dec_ctx, frame, &got_frame, pkt);
   if (len < 0)
-    scm_misc_error("ffmpeg-read-video", "Error decoding frame: ~a", scm_list_1(get_error_text(len)));
+    scm_misc_error("ffmpeg-read-audio/video", "Error decoding frame: ~a", scm_list_1(get_error_text(len)));
   consume_packet_data(pkt, pkt->size);
   return got_frame ? list_image_info(self) : SCM_BOOL_F;
 }

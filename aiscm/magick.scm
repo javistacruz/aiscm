@@ -9,9 +9,12 @@
   #:use-module (aiscm sequence)
   #:use-module (aiscm jit)
   #:use-module (aiscm op)
-  #:export (read-image write-image))
+  #:re-export (<pointer<element>> <meta<pointer<element>>>
+               <pointer<rgb<>>> <meta<pointer<rgb>>>>
+               read-image write-image))
+
 (load-extension "libguile-aiscm-magick" "init_magick")
-(define (read-image file-name)
+(define-method (read-image (file-name <string>))
   (let [(picture    (magick-read-image file-name))
         (array-type (lambda (format) (multiarray (if (eq? format 'I) <ubyte> <ubytergb>) 2)))
         (memory     (lambda (base mem size) (make <mem> #:base base #:memory mem #:size size)))
@@ -19,7 +22,7 @@
     (apply (lambda (format shape base mem size)
              (array (array-type format) shape (memory base mem size)))
            picture)))
-(define (write-image img file-name)
+(define-method (write-image (img <sequence<>>) (file-name <string>))
   (let [(format    (cond ((eq? (typecode img) <ubyte>)    'I)
                          ((eq? (typecode img) <ubytergb>) 'RGB)
                          (else #f)))

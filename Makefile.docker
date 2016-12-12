@@ -7,21 +7,35 @@ OPTS=
 VERSION=$(shell grep AC_INIT configure.ac | sed -e "s/.*\[\([0-9\.]*\)\].*/\1/")
 PACKAGE=aiscm_$(shell dpkg-parsechangelog --show-field Version)
 
-all: docker docker/Dockerfile docker/aiscm.tar.gz docker/debian docker/configure.ac docker/Makefile.deb
+all: package
+	cd apt && reprepro includedeb $(CODENAME) ../pkg/$(PACKAGE)_amd64.deb && cd ..
+	cd apt && reprepro includedsc $(CODENAME) ../pkg/$(PACKAGE).dsc && cd ..
+
+container: docker docker/Dockerfile docker/aiscm.tar.gz docker/debian docker/configure.ac docker/Makefile.package
 	cd docker && docker build $(OPTS) -t $(IMAGE) . && cd ..
 
-run: all
+run: container
 	docker run -t -i -v $(shell pwd):/mnt $(IMAGE) /bin/bash
 
-package: all
-	mkdir -p pkg
-	cp aiscm-$(VERSION).tar.gz pkg/aiscm_$(VERSION).orig.tar.gz
-	docker run -v $(shell pwd):/mnt $(IMAGE) cp pkg/$(PACKAGE).debian.tar.xz /mnt/pkg
-	docker run -v $(shell pwd):/mnt $(IMAGE) cp pkg/$(PACKAGE).dsc /mnt/pkg
-	docker run -v $(shell pwd):/mnt $(IMAGE) cp pkg/$(PACKAGE)_amd64.deb /mnt/pkg
+package: pkg/aiscm_$(VERSION).orig.tar.gz pkg/$(PACKAGE).debian.tar.xz pkg/$(PACKAGE).dsc pkg/$(PACKAGE)_amd64.deb
+
+pkg/aiscm_$(VERSION).orig.tar.gz: aiscm-$(VERSION).tar.gz pkg
+	cp $< $@
+
+pkg/$(PACKAGE).debian.tar.xz: pkg container
+	docker run $(IMAGE) cat $@ > $@
+
+pkg/$(PACKAGE).dsc: pkg container
+	docker run $(IMAGE) cat $@ > $@
+
+pkg/$(PACKAGE)_amd64.deb: pkg container
+	docker run $(IMAGE) cat $@ > $@
+
+pkg:
+	mkdir -p $@
 
 docker:
-	mkdir -p docker
+	mkdir -p $@
 
 docker/Dockerfile: Dockerfile
 	cp $< $@
@@ -35,7 +49,7 @@ docker/debian:: debian
 docker/configure.ac: configure.ac
 	cp $< $@
 
-docker/Makefile.deb: Makefile.deb
+docker/Makefile.package: Makefile.package
 	cp $< $@
 
 aiscm-$(VERSION).tar.gz:

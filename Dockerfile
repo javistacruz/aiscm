@@ -17,6 +17,7 @@ RUN apt-get install -q -y libjpeg-dev libmjpegtools-dev
 RUN apt-get install -q -y libpulse-dev
 RUN apt-get install -q -y imagemagick libmagickcore-dev
 RUN apt-get install -q -y libswscale-dev libavutil-dev libavcodec-dev libavformat-dev
+RUN apt-get install -q -y libxpm-dev
 RUN mkdir -p /usr/src/aiscm
 WORKDIR /usr/src/aiscm
 ADD debian/control debian/control
@@ -24,8 +25,6 @@ RUN mk-build-deps --install --remove --tool 'apt-get -q --yes' debian/control
 COPY aiscm.tar.gz .
 ADD configure.ac .
 ADD debian debian
-ADD Makefile.deb .
-RUN make -f Makefile.deb
+ADD Makefile.package .
+RUN make -f Makefile.package
 RUN dpkg --install pkg/aiscm_*.deb
-RUN useradd -m -s /bin/bash -u 1000 default
-USER default

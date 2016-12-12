@@ -2,7 +2,7 @@ dnl Run `make -f Makefile.dist` to generate a configure script.
 dnl Then run ./configure to generate a Makefile.
 dnl Finally run make to build the project.
 AC_PREREQ([2.69])
-AC_INIT([aiscm], [0.6.2], [jan@wedesoft.de])
+AC_INIT([aiscm], [0.9.1], [jan@wedesoft.de])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.14])
 AC_CONFIG_MACRO_DIR([m4])
@@ -79,6 +79,15 @@ AC_TRY_LINK([#include <libavutil/imgutils.h>],
             [AC_MSG_RESULT([no])])
 LIBS="$old_LIBS"
 
+LIBS="$LIBS -lXpm"
+AC_MSG_CHECKING([for XpmCreatePixmapFromData])
+AC_TRY_LINK([#include <X11/xpm.h>],
+            [XpmCreatePixmapFromData(0, 0, 0, 0, 0, 0)],
+            [AC_MSG_RESULT([yes])],
+            [AC_MSG_RESULT([no])]
+            [AC_MSG_ERROR([Could not locate Xpm library])])
+LIBS="$old_LIBS"
+
 GUILE_PKG([2.2 2.0 1.8])
 GUILE_PROGS
 GUILE_FLAGS
@@ -116,6 +125,7 @@ AC_TRY_LINK([#include <X11/extensions/Xv.h>],
    [AC_MSG_RESULT([yes])],
    [AC_MSG_RESULT([no])]
    [AC_MSG_ERROR([Could not locate Xvideo extension])])
+old_LIBS="$LIBS"
 
 dnl Switch for debug or release mode.
 AC_ARG_ENABLE(debug,

@@ -3,16 +3,18 @@
   #:use-module (ice-9 optargs)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (system foreign)
   #:use-module (aiscm element)
   #:use-module (aiscm int)
   #:use-module (aiscm pointer)
-  #:use-module (aiscm sequence)
   #:use-module (aiscm util)
   #:use-module (aiscm mem)
   #:export (<meta<sequence<>>> <sequence<>>
             sequence seq multiarray to-list to-array default-strides
             dump crop project roll unroll downsample dimension stride)
-  #:export-syntax (arr))
+  #:export-syntax (arr)
+  #:re-export (<pointer<element>> <meta<pointer<element>>>
+               <pointer<int<>>> <meta<pointer<int<>>>>))
 (define-class* <sequence<>> <element> <meta<sequence<>>> <meta<element>>
               (shape #:init-keyword #:shape #:getter shape)
               (strides #:init-keyword #:strides #:getter strides))
@@ -26,6 +28,7 @@
           (define-method (initialize (self class) initargs)
             (let-keywords initargs #f (shape size value strides)
               (let* [(value   (or value (make <mem>
+                                         #:pointerless (pointerless? type)
                                          #:size (* (size-of (typecode type))
                                                    (or size (apply * shape))))))
                      (shape   (or shape (list size)))
@@ -39,6 +42,7 @@
 (define seq sequence)
 (define-syntax-rule (arr arg1 args ...)
   (if (is-a? (quote arg1) <symbol>) (to-array arg1 '(args ...)) (to-array '(arg1 args ...))))
+(define-method (pointerless? (self <meta<sequence<>>>)) (pointerless? (typecode self)))
 
 (define-method (pointer (target-class <meta<sequence<>>>)) target-class)
 (define (multiarray type dimensions)
@@ -88,7 +92,7 @@
   (map (compose to-list (cut get self <>)) (iota (last (shape self)))))
 (define-method (shape (self <null>)) #f)
 (define-method (shape (self <pair>)) (attach (shape (car self)) (length self)))
-(define-method (to-array (lst <list>)) (to-array (apply match (flatten lst)) lst))
+(define-method (to-array (lst <list>)) (to-array (apply native-type (flatten lst)) lst))
 (define-method (to-array (typecode <meta<element>>) (lst <list>))
   (let* [(shape  (shape lst))
          (retval (make (multiarray typecode (length shape)) #:shape shape))]
@@ -160,7 +164,18 @@
 (define-method (downsample (n <null>) (self <sequence<>>)) self)
 (define-method (downsample (n <pair>) (self <sequence<>>))
   (downsample (last n) (roll (downsample (all-but-last n) (unroll self)))))
-(define-method (build (self <meta<sequence<>>>) value) value)
-(define-method (content (self <sequence<>>))
-  (append (map last (list (shape self) (strides self))) (content (get (project self)))))
+(define-method (build (self <meta<sequence<>>>) lst)
+  (let [(shape (reverse (map (cut list-ref lst <>) (iota (dimensions self) 0 2))))
+        (strides (reverse (map (cut list-ref lst <>) (iota (dimensions self) 1 2))))]
+  (make self #:strides strides
+             #:shape shape
+             #:value (make <mem> #:base (make-pointer (last lst)) #:size (apply * (size-of (typecode self)) shape)))))
+(define-method (unbuild (type <meta<sequence<>>>) self)
+  (cons (dimension self)
+    (cons (stride self)
+      (unbuild (project type) (project self)))))
+(define-method (content (type <meta<sequence<>>>) (self <sequence<>>))
+  (cons (make <long> #:value (dimension self))
+    (cons (make <long> #:value (stride self))
+      (content (project type) (project self)))))
 (define-method (signed? (self <meta<sequence<>>>)) (signed? (typecode self)))

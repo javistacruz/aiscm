@@ -37,7 +37,7 @@ Scheme list objects can be converted to uniform arrays and vice versa using the 
 
 *to-array* uses type matching to determine the most suitable type.
 
-### Dimension, shape, and strides
+## Dimension, shape, and strides
 
 The *dimension* is the number of array indices used to select an element. The *shape* is a list specifying the size of the array in each direction. The *stride* specifies the internal memory layout of the array.
 
@@ -73,11 +73,11 @@ Note that the integer type can be specified using number of bits and signed-ness
 
 Given the following image ...
 
-![](pavillion.jpg "Test input image")
+![pavillion.jpg](pavillion.jpg "Test input image")
 
 ... rolling the dimensions will result in the following image:
 
-![](rolled.jpg "Dimension rolled")
+![rolled.jph](rolled.jpg "Dimension rolled")
 
 ```Scheme
 @../tests/integration/roll_image.scm@
@@ -95,7 +95,7 @@ The *project* method can be used to extract the first slice of an array.
 
 One can *dump* array slices from the beginning of the array and *crop* the length of the array, i.e. removing slices from the end of the array.
 
-![](cropped.jpg "Cropped image")
+![cropped.jpg](cropped.jpg "Cropped image")
 
 ```Scheme
 @../tests/integration/crop_dump.scm@
@@ -103,18 +103,17 @@ One can *dump* array slices from the beginning of the array and *crop* the lengt
 
 The *dump* and *crop* command can also take a list of values in order to extract a part of a multi-dimensional array:
 
-![](crop2d.jpg "2d cropped image")
+![crop2d.jpg](crop2d.jpg "2d cropped image")
 
 ```Scheme
 @../tests/integration/crop_2d.scm@
 ```
 
 ## RGB values
-### Swap colour channels
 
 The *rgb* method can be used to combine colour values and images. The following program swaps the colour channels around:
 
-![](swap-channels.jpg "Image with colour channels swapped")
+![swap-channels.jpg](swap-channels.jpg "Image with colour channels swapped")
 
 ```Scheme
 @../tests/integration/swap_channels.scm@
@@ -130,3 +129,11 @@ At the moment only integer complex values are supported. Here is a small example
 
 Since native integers are used, numerical overflow can occur.
 Note that you can use *to-type* to convert an array to a more suitable type.
+
+## Object arrays
+
+It is also possible to use arrays of Scheme objects instead of using a native representation:
+
+```Scheme
+@../tests/integration/object_array.scm@
+```
