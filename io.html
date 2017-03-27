@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Jan Wedekind" />
+  <meta name="date" content="2017-03-27" />
+  <title>AIscm - Guile extension for numerical arrays and tensors</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="buttondown.css" type="text/css" />
+</head>
+<body>
+<h1 id="inputoutput">Input/output</h1>
+<p>The I/O modules provide sources (and sinks) for video and audio data.</p>
+<h2 id="loadingsaving-images-using-imagemagick">Loading/saving images using ImageMagick</h2>
+<p>An image can be read from disk using <em>read-image</em> which uses the ImageMagick library to load the image.</p>
+<div class="figure">
+<img src="fubk.png" title="Test input image" alt="fubk.png" /><p class="caption">fubk.png</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm xorg))
+(show (read-image <span class="st">&quot;fubk.png&quot;</span>))</code></pre>
+<p><em>write-image</em> writes an image to disk.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence) (aiscm magick) (aiscm xorg))
+(write-image (arr (<span class="dv">32</span> <span class="dv">255</span> <span class="dv">96</span> <span class="dv">255</span>) (<span class="dv">255</span> <span class="dv">160</span> <span class="dv">255</span> <span class="dv">224</span>)) <span class="st">&quot;pattern.png&quot;</span>)</code></pre>
+<div class="figure">
+<img src="scaled-pattern.png" title="Output image" alt="scaled-pattern.png" /><p class="caption">scaled-pattern.png</p>
+</div>
+<h2 id="xorg-display">Xorg display</h2>
+<h3 id="images">Images</h3>
+<p>As shown above, you can display images using the method <em>show</em>:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm xorg))
+(show (read-image <span class="st">&quot;fubk.png&quot;</span>))</code></pre>
+<p>One can also display a list of images:</p>
+<div class="figure">
+<img src="fubk-colours.png" title="List of images" alt="fubk-colours.png" /><p class="caption">fubk-colours.png</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm xorg) (aiscm rgb) (aiscm jit))
+(<span class="kw">define</span><span class="fu"> img </span>(read-image <span class="st">&quot;fubk.png&quot;</span>))
+(show (<span class="kw">list</span> (* (rgb <span class="dv">1</span> <span class="dv">0</span> <span class="dv">0</span>) img) (* (rgb <span class="dv">0</span> <span class="dv">1</span> <span class="dv">0</span>) img) (* (rgb <span class="dv">0</span> <span class="dv">0</span> <span class="dv">1</span>) img)))</code></pre>
+<h3 id="videos">Videos</h3>
+<p>It is also possible to display a video using the <em>show</em> method:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm v4l2) (aiscm xorg))
+(<span class="kw">define</span><span class="fu"> v </span>(make &lt;v4l2&gt;))
+(show (<span class="kw">lambda</span> _ (read-image v)))
+(destroy v)</code></pre>
+<p>A function returning lists of images can be used to display multiple videos synchronously.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm v4l2) (aiscm sequence) (aiscm rgb) (aiscm xorg))
+(<span class="kw">define</span><span class="fu"> v </span>(make &lt;v4l2&gt;))
+(show (<span class="kw">lambda</span> _ (<span class="kw">let</span> [(img (to-array (read-image v)))] (<span class="kw">list</span> (red img) (green img) (blue img)))))
+(destroy v)</code></pre>
+<p>If necessary, one can also handle the display and window objects directly. Possible types of output are <em>IO-XIMAGE</em>, <em>IO-OPENGL</em>, and <em>IO-XVIDEO</em>.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm v4l2) (aiscm xorg))
+(<span class="kw">define</span><span class="fu"> v </span>(make &lt;v4l2&gt;))
+(<span class="kw">define</span><span class="fu"> d </span>(make &lt;xdisplay&gt; #:name <span class="st">&quot;:0.0&quot;</span>))
+(<span class="kw">define</span><span class="fu"> w </span>(make &lt;xwindow&gt; #:display d #:shape &#39;(<span class="dv">640</span> <span class="dv">480</span>) #:io IO-XVIDEO))
+(title= w <span class="st">&quot;Test&quot;</span>)
+(show w)
+(<span class="kw">while</span> (<span class="kw">not</span> (quit? d)) (write-image (read-image v) w) (process-events d))
+(quit= d <span class="dv">#f</span>)
+(hide w)
+(destroy d)
+(destroy v)</code></pre>
+<h2 id="video-for-linux-version-2-v4l2">Video for Linux version 2 (V4L2)</h2>
+<div class="figure">
+<img src="v4l2.jpg" title="V4L2 input image" alt="v4l2.jpg" /><p class="caption">v4l2.jpg</p>
+</div>
+<p>As shown above already, you can open a camera and grab a frame as follows.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm v4l2))
+(<span class="kw">define</span><span class="fu"> v </span>(make &lt;v4l2&gt;))
+(read-image v)
+<span class="co">; #&lt;&lt;image&gt; YUY2 (640 480)&gt;</span>
+(destroy v)</code></pre>
+<p>It is also possible to specify the device, a channel, and a closure for selecting the video mode.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (ice<span class="dv">-9</span> rdelim) (aiscm v4l2))
+(<span class="kw">define</span><span class="fu"> </span>(select formats)
+  (<span class="kw">for-each</span> (<span class="kw">lambda</span> (i mode) (format <span class="dv">#t</span> <span class="st">&quot;~a: ~a~&amp;&quot;</span> i mode))
+            (iota (<span class="kw">length</span> formats))
+            formats)
+  (format <span class="dv">#t</span> <span class="st">&quot;&gt; &quot;</span>) (<span class="kw">list-ref</span> formats (<span class="kw">string-&gt;number</span> (read-line (<span class="kw">current-input-port</span>)))))
+(<span class="kw">define</span><span class="fu"> v </span>(make &lt;v4l2&gt; #:device <span class="st">&quot;/dev/video0&quot;</span> #:channel <span class="dv">0</span> #:select select))
+(read-image v)
+(destroy v)</code></pre>
+<h2 id="pulse-audio">Pulse audio</h2>
+<p>The following example program creates a sine wave and outputs it to the audio device.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm pulse) (aiscm int) (aiscm sequence))
+(<span class="kw">define</span><span class="fu"> samples </span>(to-array &lt;sint&gt; (map (<span class="kw">lambda</span> (t) (<span class="kw">round</span> (* (<span class="kw">sin</span> (<span class="kw">/</span> (* t <span class="dv">1000</span> <span class="dv">2</span> <span class="fl">3.1415926</span>) <span class="dv">44100</span>)) <span class="dv">20000</span>))) (iota <span class="dv">441</span>))))
+(<span class="kw">define</span><span class="fu"> output </span>(make &lt;pulse-play&gt; #:typecode &lt;sint&gt; #:channels <span class="dv">1</span> #:rate <span class="dv">44100</span>))
+(channels output)
+<span class="co">;1</span>
+(rate output)
+<span class="co">;44100</span>
+(<span class="kw">for-each</span> (<span class="kw">lambda</span> _ (write-audio samples output)) (iota <span class="dv">300</span>))
+(drain output)</code></pre>
+<p>The <em>drain</em> method waits for the content of the audio buffer to finish playing. The method <em>flush</em> (not shown here) can be used to empty the audio buffer.</p>
+<p>Audio data can be recorded in a similar fashion. The following example records 3 seconds of audio data and then plays it back.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm int) (aiscm pulse))
+(<span class="kw">define</span><span class="fu"> record </span>(make &lt;pulse-record&gt; #:typecode &lt;sint&gt; #:channels <span class="dv">2</span> #:rate <span class="dv">44100</span>))
+(<span class="kw">define</span><span class="fu"> play </span>(make &lt;pulse-play&gt; #:typecode &lt;sint&gt; #:channels <span class="dv">2</span> #:rate <span class="dv">44100</span>))
+(<span class="kw">for-each</span> (<span class="kw">lambda</span> _ (write-audio (read-audio record <span class="dv">4410</span>) play)) (iota <span class="dv">30</span>))
+(drain play)</code></pre>
+<h2 id="video-files">Video files</h2>
+<h3 id="input">Input</h3>
+<p>The following example shows how to use the FFmpeg interface to open and view a video. The video presentation time stamps are used to display the video at the correct speed. The method <em>latency</em> is used to determine the delay of the audio buffer.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm ffmpeg) (aiscm xorg) (aiscm util))
+<span class="co">; Creative commons audio-video sync test video https://www.youtube.com/watch?v=GKBKa9Za-FQ</span>
+(<span class="kw">define</span><span class="fu"> video </span>(open-ffmpeg-input <span class="st">&quot;av-sync.mp4&quot;</span>))
+(<span class="kw">define</span><span class="fu"> time </span>(clock))
+(show
+  (<span class="kw">lambda</span> (dsp)
+    (format <span class="dv">#t</span> <span class="st">&quot;video pts = ~8,2f, clock = ~8,2f~&amp;&quot;</span> (video-pts video) (elapsed time))
+    (synchronise (read-image video) (<span class="kw">-</span> (video-pts video) (elapsed time)) (event-loop dsp))))</code></pre>
+<p>The method <em>pts=</em> can be used to seek to an absolute position in audio/video streams:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm ffmpeg) (aiscm xorg))
+<span class="co">; Creative commons audio-video sync test video https://www.youtube.com/watch?v=GKBKa9Za-FQ</span>
+(<span class="kw">define</span><span class="fu"> video </span>(open-ffmpeg-input <span class="st">&quot;av-sync.mp4&quot;</span>))
+(pts= video <span class="dv">15</span>)
+(show (read-image video))</code></pre>
+<h3 id="output">Output</h3>
+<p>The <em>FFmpeg</em> bindings can also be used to write a video stream to a file. By default the file format is determined by the file name extension.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm util) (aiscm element) (aiscm v4l2) (aiscm xorg) (aiscm ffmpeg))
+(<span class="kw">define</span><span class="fu"> input </span>(make &lt;v4l2&gt;))
+(<span class="kw">define</span><span class="fu"> output </span>(open-ffmpeg-output (<span class="kw">string-append</span> (tmpnam) <span class="st">&quot;.avi&quot;</span>) #:shape (shape input) #:frame-rate <span class="dv">10</span>))
+(<span class="kw">define</span><span class="fu"> timer </span>(clock))
+(<span class="kw">define</span><span class="fu"> count </span><span class="dv">0</span>)
+(show
+  (<span class="kw">lambda</span> _
+    (format <span class="dv">#t</span> <span class="st">&quot;actual frame rate = ~a frames/second~&amp;&quot;</span> (<span class="kw">/</span> count (elapsed timer)))
+    (set! count (<span class="dv">1</span>+ count))
+    (write-image (read-image input) output)))
+(destroy output)</code></pre>
+<h2 id="audio-files">Audio files</h2>
+<h3 id="input-1">Input</h3>
+<p>One can play samples from an audio file by passing them to the audio device using the <em>write-audio</em> method. It is also possible to pass a function returning consecutive audio samples as shown below.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm ffmpeg) (aiscm pulse))
+(<span class="kw">define</span><span class="fu"> audio </span>(open-ffmpeg-input <span class="st">&quot;test.mp3&quot;</span>))
+(<span class="kw">define</span><span class="fu"> output </span>(make &lt;pulse-play&gt; #:rate (rate audio) #:channels (channels audio) #:typecode (typecode audio)))
+(write-audio (<span class="kw">lambda</span> _ (read-audio audio (rate audio))) output)
+(drain output)</code></pre>
+<h3 id="output-1">Output</h3>
+<p>One can write audio samples to an audio file. When opening the output file, the sample rate, sample type, and number of channels need to be specified. The following sample creates an audio file of 3 seconds length with a 1000 Hz sine wave.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm ffmpeg) (aiscm int) (aiscm sequence))
+(<span class="kw">define</span><span class="fu"> samples </span>(to-array &lt;sint&gt; (map (<span class="kw">lambda</span> (t) (<span class="kw">round</span> (* (<span class="kw">sin</span> (<span class="kw">/</span> (* t <span class="dv">1000</span> <span class="dv">2</span> <span class="fl">3.1415926</span>) <span class="dv">44100</span>)) <span class="dv">20000</span>))) (iota <span class="dv">441</span>))))
+(<span class="kw">define</span><span class="fu"> output </span>(open-ffmpeg-output (<span class="kw">string-append</span> (tmpnam) <span class="st">&quot;.mp3&quot;</span>) #:rate <span class="dv">44100</span> #:typecode &lt;sint&gt; #:channels <span class="dv">1</span>))
+(<span class="kw">for-each</span> (<span class="kw">lambda</span> _ (write-audio samples output)) (iota <span class="dv">300</span>))
+(destroy output)</code></pre>
+<h2 id="videoaudio-files">Video/Audio files</h2>
+<h3 id="input-2">Input</h3>
+<p>Video/audio files usually contain a video and an audio stream. The following example displays video frames and plays audio data in a synchronised way.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm ffmpeg) (aiscm xorg) (aiscm pulse) (aiscm image) (aiscm util))
+<span class="co">; Creative commons audio-video sync test video https://www.youtube.com/watch?v=GKBKa9Za-FQ</span>
+(<span class="kw">define</span><span class="fu"> video </span>(open-ffmpeg-input <span class="st">&quot;av-sync.mp4&quot;</span>))
+(<span class="kw">define</span><span class="fu"> pulse </span>(make &lt;pulse-play&gt; #:rate (rate video) #:channels (channels video) #:typecode (typecode video) #:latency <span class="fl">0.1</span>))
+(show
+  (<span class="kw">lambda</span> (dsp)
+    (<span class="kw">while</span> (<span class="kw">&lt;</span> (audio-pts video) (<span class="kw">+</span> (video-pts video) <span class="fl">0.2</span>)) (write-audio (<span class="kw">or</span> (read-audio video (<span class="kw">/</span> (rate video) <span class="dv">10</span>)) (<span class="kw">break</span>)) pulse))
+    (format <span class="dv">#t</span> <span class="st">&quot;video pts = ~8,2f, audio-pts = ~8,2f, latency = ~8,2f~&amp;&quot;</span> (video-pts video) (audio-pts video) (latency pulse))
+    (synchronise (read-image video) (<span class="kw">-</span> (video-pts video) (<span class="kw">-</span> (audio-pts video) (latency pulse))) (event-loop dsp))))
+(drain pulse)</code></pre>
+<p>Note that <em>FFmpeg</em> also supports network streaming of video data. I.e. the following example will play the <a href="https://durian.blender.org/">Sintel short film</a> from a web server.</p>
+<div class="figure">
+<a href="http://peach.themazzone.com/durian/movies/sintel-1024-surround.mp4"><img src="sintel.jpg" title="Sintel short movie" /></a>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm ffmpeg) (aiscm xorg) (aiscm pulse) (aiscm image) (aiscm util))
+(<span class="kw">define</span><span class="fu"> video </span>(open-ffmpeg-input <span class="st">&quot;http://peach.themazzone.com/durian/movies/sintel-1024-surround.mp4&quot;</span>))
+(<span class="kw">define</span><span class="fu"> pulse </span>(make &lt;pulse-play&gt; #:rate (rate video) #:channels (channels video) #:typecode (typecode video) #:latency <span class="fl">0.1</span>))
+(show
+  (<span class="kw">lambda</span> (dsp)
+    (<span class="kw">while</span> (<span class="kw">&lt;</span> (audio-pts video) (<span class="kw">+</span> (video-pts video) <span class="fl">0.2</span>)) (write-audio (<span class="kw">or</span> (read-audio video (<span class="kw">/</span> (rate video) <span class="dv">10</span>)) (<span class="kw">break</span>)) pulse))
+    (synchronise (read-image video) (<span class="kw">-</span> (video-pts video) (<span class="kw">-</span> (audio-pts video) (latency pulse))) (event-loop dsp))))
+(drain pulse)</code></pre>
+<h3 id="output-2">Output</h3>
+<p>When recording video and audio, the methods <em>write-image</em> and <em>write-audio</em> are used to write video frames and audio samples. The following example records video frames using Video4Linux2 and audio samples using Pulse audio.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm ffmpeg) (aiscm v4l2) (aiscm pulse) (aiscm xorg) (aiscm element) (aiscm int))
+(<span class="kw">define</span><span class="fu"> input </span>(make &lt;v4l2&gt;))
+(<span class="kw">define</span><span class="fu"> output </span>(open-ffmpeg-output (<span class="kw">string-append</span> (tmpnam) <span class="st">&quot;.avi&quot;</span>)
+                                   #:shape (shape input) #:frame-rate <span class="dv">10</span> #:rate <span class="dv">44100</span> #:typecode &lt;sint&gt; #:channels <span class="dv">2</span>))
+(<span class="kw">define</span><span class="fu"> record </span>(make &lt;pulse-record&gt; #:typecode &lt;sint&gt; #:channels <span class="dv">2</span> #:rate <span class="dv">44100</span>))
+(show
+  (<span class="kw">lambda</span> _
+    (write-audio (read-audio record (<span class="kw">/</span> (rate output) (frame-rate output))) output)
+    (write-image (read-image input) output)))
+(destroy output)</code></pre>
+<hr/><em>Generated by Pandoc - 2017-03-27</em>
+</body>
+</html>

@@ -1,0 +1,57 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+Origin: AIscm
+Label: AIscm
+Codename: sid
+Date: Mon, 27 Mar 2017 19:08:03 UTC
+Architectures: i386 amd64
+Components: main
+Description: Apt repository for AIscm
+MD5Sum:
+ d41d8cd98f00b204e9800998ecf8427e 0 main/binary-i386/Packages
+ 7029066c27ac6f5ef18d660d5741979a 20 main/binary-i386/Packages.gz
+ 581bbd0a6dddfac54eb2cd4877368a57 100 main/binary-i386/Release
+ cb2e2aece1d97a0ef611889629a59394 1348 main/binary-amd64/Packages
+ 3cdb9fea427027217117abe60ed8e225 800 main/binary-amd64/Packages.gz
+ a1ca2a9369eac791d9483f7e431ab3cf 101 main/binary-amd64/Release
+ e4ac2f57a8e4f4b70c06b52a43fa72f6 1413 main/source/Sources
+ 7ccb6079d8aa994df1971b1cf67daaf7 755 main/source/Sources.gz
+ ede8bf885c7995601214c7650e227812 102 main/source/Release
+SHA1:
+ da39a3ee5e6b4b0d3255bfef95601890afd80709 0 main/binary-i386/Packages
+ 46c6643f07aa7f6bfe7118de926b86defc5087c4 20 main/binary-i386/Packages.gz
+ 9d388ca82a4bd6e6b7ce39e0e1b4e152de8df623 100 main/binary-i386/Release
+ f6c677dad9c4ff3c9a7064ff57b1157592f4429b 1348 main/binary-amd64/Packages
+ bf7e2658507bbfe2c4c3ddbe41ac303ab500cad1 800 main/binary-amd64/Packages.gz
+ c8ca83d87eabf331531343b0ee120dcecfde4e5d 101 main/binary-amd64/Release
+ 33fa1d0f051458b5789a283994b44465c06bcfb4 1413 main/source/Sources
+ 56577d17f69f1bd4c38a7508be10825a1ecf7c3b 755 main/source/Sources.gz
+ 076823b9d693a12470363adda895cad187be80d1 102 main/source/Release
+SHA256:
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 main/binary-i386/Packages
+ 59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 main/binary-i386/Packages.gz
+ 497421e335edf34550777c30a35ea20a26ab4d262309d74d7c3d3036d6fb4219 100 main/binary-i386/Release
+ 051bd1e75033f811a716f182788e5eaf4e72790249657c73c439fa532f52c243 1348 main/binary-amd64/Packages
+ 184f97f8b55e855e8172ac8c386c62b5e23800cfe70c93a0a06f0dfe313b00f1 800 main/binary-amd64/Packages.gz
+ 3558c384eeed1a7a4c5e45a0b1a5f9a6ae02483ddf2cfc670e687a5dfbeb1997 101 main/binary-amd64/Release
+ cd16cf10fcfb41bbcefc37e288fb0f32297b90cc70fec73f07fa0ff07c19eadd 1413 main/source/Sources
+ ebcc87d035cbc59b996efb78d4e5cc3b1fd1ad5c84785172d2c15d2858546ecd 755 main/source/Sources.gz
+ c76b24a00da733c403b6d58c568d4bc4a81995640beba3ef48afd2109aa21ba6 102 main/source/Release
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBCAAGBQJY2WMeAAoJEObFyhTaTIMVGegP/A400xrTjk4/r/HUweVlJOo+
+y2s8X14ZEQtb0AiH4Tv3P9fPeygimuNxZX41FDvrktylctbydjj6ohx9f8chV+O+
+KySfgGa9Es4kxTaOUmeaK3iy6t/aJeq2RzmQVcxZf8NwC3Y53op64Ix2O8gCnuo9
+aLsbVztdVtQIWvTflmETxcbvxIOhm2zM/6e2mfwGwYJHlrI1OvPZHXVe82wiJtIC
+f6Lj83Ceo7wt5PmfzeAW63gq1hk83XfCt14ql6m/sHE0Wtl0JIIm0RlBJY/UC6U7
+7dWdc6a855MCcCROZFYht+p32REqFdR3RcWbxuN/YaJFfXTN9idAIA6X2QYlZpNz
+hlVzrSksQAo48n/VchVi2zas92BXByesExFb2MYv+wiChAutf4K8vUHCiaMsmGLR
+It0yElg0BW48DpykZ23axfKiagTXW6qvgJUJ7creVflDBUzv0c77gtBZPvf/Y/sU
+15S840U4kPkOCnABbn3G1jDjCoOBFSwAzh+X/DNpXpwfeSdal+3qjsyHnGS4cm9y
+Rurc4uud3iw9J6HZWz3q1eaghDqZ1dDsuOddvgRxNX20ogFYw35fiusAXPRc2ike
+i/lJNsQZDU9r2WgtSyf7IRiJJpb19viin0o5tBNYkf+9bAmq3Btp6uhrwvTtGW41
+eSyW/Opt8TXlVGJEZ/qr
+=lGFQ
+-----END PGP SIGNATURE-----

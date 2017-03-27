@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Jan Wedekind" />
+  <meta name="date" content="2017-03-27" />
+  <title>AIscm - Guile extension for numerical arrays and tensors</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="buttondown.css" type="text/css" />
+</head>
+<body>
+<h1 id="built-in-assembler">Built-in assembler</h1>
+<p>The built-in Intel x86-64 assembler facilitates performant implementations of numerical methods. The following example shows a function for negating integers implemented using the built-in assembler. The function then is used to negate the number <em>42</em>.</p>
+<h2 id="function-definition">Function definition</h2>
+<p>Here is an example function negating an integer:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm asm) (aiscm int))
+(<span class="kw">define</span><span class="fu"> ctx </span>(make &lt;context&gt;))
+(<span class="kw">define</span><span class="fu"> f </span>(asm ctx &lt;int&gt; (<span class="kw">list</span> &lt;int&gt;) (<span class="kw">list</span> (MOV EAX EDI) (NEG EAX) (RET))))
+(f <span class="dv">42</span>)
+<span class="co">; -42</span></code></pre>
+<p>This will generate and call an identity function with the following assembler code</p>
+<pre class="Assembler"><code>mov eax,edi
+neg eax
+ret</code></pre>
+<p>It is also possible to use jump statements and labels:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm asm) (aiscm int))
+(<span class="kw">define</span><span class="fu"> ctx </span>(make &lt;context&gt;))
+(<span class="kw">define</span><span class="fu"> f </span>(asm ctx &lt;int&gt; (<span class="kw">list</span> &lt;int&gt;) (<span class="kw">list</span> (MOV EAX EDI) (CMP EAX <span class="dv">0</span>) (JNLE &#39;skip) (NEG EAX) &#39;skip (RET))))
+(f -<span class="dv">42</span>)
+<span class="co">; 42</span>
+(f <span class="dv">42</span>)
+<span class="co">; 42</span></code></pre>
+<p>This will generate and call a function for computing the absolute value. The assembler code is as follows</p>
+<pre class="Assembler"><code>mov eax, edi
+cmp eax, 0x0
+jg 0xb
+neg eax
+ret</code></pre>
+<p>Setting the environment variable <em>DEBUG</em> to <em>YES</em> will cause the JIT compiler to display the assembler code using the <em>objdump</em> command line tool.</p>
+<h2 id="virtual-registers">Virtual registers</h2>
+<p>The <em>jit</em> function provides a higher level interface with virtual registers and operator mappings. The following example defines a function for adding two integers:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm asm) (aiscm jit) (aiscm int))
+(<span class="kw">define</span><span class="fu"> ctx </span>(make &lt;context&gt;))
+(<span class="kw">define</span><span class="fu"> f </span>(jit ctx (<span class="kw">list</span> &lt;int&gt; &lt;int&gt;) (<span class="kw">lambda</span> (x y) (<span class="kw">+</span> x y))))
+(f <span class="dv">12</span> <span class="dv">34</span>)
+<span class="co">; 46 </span></code></pre>
+<p>The corresponding assembler code is</p>
+<pre class="Assembler"><code>sub rsp, 0x8
+mov eax, edi
+add eax, esi
+add rsp, 0x8
+ret</code></pre>
+<p>The <em>jit</em> function also instantiates loops for array processing. For example:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm asm) (aiscm jit) (aiscm int) (aiscm rgb) (aiscm sequence))
+(<span class="kw">define</span><span class="fu"> ctx </span>(make &lt;context&gt;))
+(<span class="kw">define</span><span class="fu"> f </span>(jit ctx (<span class="kw">list</span> (rgb &lt;int&gt;) (sequence &lt;int&gt;)) <span class="kw">+</span>))
+(f (rgb <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span>) (seq &lt;int&gt; <span class="dv">4</span> <span class="dv">5</span> <span class="dv">6</span>))
+<span class="co">; #&lt;sequence&lt;rgb&lt;int&lt;32,signed&gt;&gt;&gt;&gt;:</span>
+<span class="co">; ((rgb 5 6 7) (rgb 6 7 8) (rgb 7 8 9))</span></code></pre>
+<h2 id="interpreter-callbacks">Interpreter callbacks</h2>
+<p>Callbacks into the <em>GNU Guile</em> interpreter are defined as well. They can be used to generate machine code which handles Scheme objects:</p>
+<pre><code>(use-modules (oop goops) (aiscm asm) (aiscm jit) (aiscm int) (aiscm obj))
+(define ctx (make &lt;context&gt;))
+(define f (jit ctx (list &lt;int&gt; &lt;obj&gt;) +))
+(f 1 (/ 2 3))
+; 5/3</code></pre>
+<hr/><em>Generated by Pandoc - 2017-03-27</em>
+</body>
+</html>

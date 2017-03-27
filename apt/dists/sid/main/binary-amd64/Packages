@@ -1,0 +1,22 @@
+Package: aiscm
+Version: 0.11.1-1
+Architecture: amd64
+Maintainer: Jan Wedekind <jan@wedesoft.de>
+Installed-Size: 1689
+Depends: guile-2.0-libs, libavcodec57 (>= 7:3.2.4) | libavcodec-extra57 (>= 7:3.2.4), libavformat57 (>= 7:3.2.4), libavutil55 (>= 7:3.2.4), libc6 (>= 2.15), libgc1c2 (>= 1:7.2d), libgl1-mesa-glx | libgl1, libglu1-mesa | libglu1, libice6 (>= 1:1.0.0), liblavjpeg-2.1-0, libmagickcore-6.q16-3 (>= 8:6.9.6.8), libmjpegutils-2.1-0, libpulse0 (>= 0.99.1), libsm6, libswresample2 (>= 7:3.2.4), libswscale4 (>= 7:3.2.4), libx11-6, libxext6, libxi6, libxmu6, libxpm4, libxt6, libxv1
+Homepage: http://wedesoft.github.io/aiscm/
+Priority: optional
+Section: lisp
+Filename: pool/main/a/aiscm/aiscm_0.11.1-1_amd64.deb
+Size: 779656
+SHA256: c4504ef5690509054b3d5dd5c587f2a1af1d83fddd9eb25f10ad43bd4ee95439
+SHA1: d8bcd7ac71f32dc169f93ddd0f639d9ac87365d4
+MD5sum: 14b66da989ebad232ff19b43b524a4aa
+Description: Guile numerical arrays and tensor extension
+ AIscm is a Guile extension providing multi-dimensional arrays and tensor
+ operations. Array elements can be scalars or composite values such as complex
+ numbers or RGB values. Array operations are provided as GOOPS generics. Real
+ time performance is achieved using an AMD64 JIT compiler. Furthermore AIscm
+ provides input/output bindings for ImageMagick, V4L2, FFmpeg, PulseAudio, and
+ X.Org.
+

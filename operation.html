@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Jan Wedekind" />
+  <meta name="date" content="2017-03-27" />
+  <title>AIscm - Guile extension for numerical arrays and tensors</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="buttondown.css" type="text/css" />
+</head>
+<body>
+<h1 id="array-operations">Array operations</h1>
+<h2 id="unary-operations">Unary operations</h2>
+<p>The unary operations are:</p>
+<ul>
+<li><strong>-</strong>: negation</li>
+<li><strong>~</strong>: bitwise not</li>
+<li><strong>=0</strong>: (or <strong>!</strong>): check equal to zero</li>
+<li><strong>!=0</strong>: test not zero</li>
+<li><strong>red</strong>: extract red channel of RGB value</li>
+<li><strong>green</strong>: extract green channel of RGB value</li>
+<li><strong>blue</strong>: extract blue channel of RGB value</li>
+<li><strong>real-part</strong>: get real part of complex number</li>
+<li><strong>imag-part</strong>: get imaginary part of complex number</li>
+<li><strong>conj</strong>: complex conjugate</li>
+</ul>
+<p>Here are a few examples using those operations:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence) (aiscm int) (aiscm jit) (aiscm rgb) (aiscm complex))
+(<span class="kw">-</span> (seq &lt;int&gt; <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>))
+<span class="co">;#&lt;sequence&lt;int&lt;32,signed&gt;&gt;&gt;:</span>
+<span class="co">;(-2 -3 -5)</span>
+(~ (seq &lt;byte&gt; -<span class="dv">128</span> -<span class="dv">3</span> -<span class="dv">2</span> -<span class="dv">1</span> <span class="dv">0</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">127</span>))
+<span class="co">;#&lt;sequence&lt;int&lt;8,signed&gt;&gt;&gt;:</span>
+<span class="co">;(127 2 1 0 -1 -2 -3 -128)</span>
+(=<span class="dv">0</span> (seq -<span class="dv">2</span> -<span class="dv">1</span> <span class="dv">0</span> <span class="dv">1</span> <span class="dv">2</span>))
+<span class="co">;#&lt;sequence&lt;bool&gt;&gt;:</span>
+<span class="co">;(#f #f #t #f #f)</span>
+(!=<span class="dv">0</span> (seq -<span class="dv">2</span> -<span class="dv">1</span> <span class="dv">0</span> <span class="dv">1</span> <span class="dv">2</span>))
+<span class="co">;#&lt;sequence&lt;bool&gt;&gt;:</span>
+<span class="co">;(#t #t #f #t #t)</span>
+(red (seq (rgb <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>) (rgb <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span>)))
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2 3)</span>
+(green (seq (rgb <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>) (rgb <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span>)))
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(3 5)</span>
+(blue (seq (rgb <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>) (rgb <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span>)))
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(5 7)</span>
+(red (seq <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>))
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2 3 5)</span>
+(<span class="kw">real-part</span> (seq (complex &lt;sint&gt;) <span class="dv">2</span>+3i <span class="dv">5</span>+7i))
+<span class="co">;#&lt;sequence&lt;int&lt;16,signed&gt;&gt;&gt;:</span>
+<span class="co">;(2 5)</span>
+(<span class="kw">real-part</span> (seq <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>))
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2 3 5)</span>
+(<span class="kw">imag-part</span> (seq (complex &lt;sint&gt;) <span class="dv">2</span>+3i <span class="dv">5</span>+7i))
+<span class="co">;#&lt;sequence&lt;int&lt;16,signed&gt;&gt;&gt;:</span>
+<span class="co">;(3 7)</span>
+(<span class="kw">imag-part</span> (seq <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>))
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(0 0 0)</span>
+(conj (seq (complex &lt;byte&gt;) <span class="dv">2</span>+3i <span class="dv">5</span>+7i))
+<span class="co">;#&lt;sequence&lt;complex&lt;int&lt;8,signed&gt;&gt;&gt;:</span>
+<span class="co">;(2.0-3.0i 5.0-7.0i)</span>
+(conj (seq <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>))
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2 3 5)</span></code></pre>
+<p>Applied to the following image ...</p>
+<div class="figure">
+<img src="star-ferry.jpg" title="Test input image" alt="star-ferry.jpg" /><p class="caption">star-ferry.jpg</p>
+</div>
+<p>... inverting the RGB values yields the following image:</p>
+<div class="figure">
+<img src="inverted.jpg" title="Inverted image" alt="inverted.jpg" /><p class="caption">inverted.jpg</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm jit))
+(write-image (~ (read-image <span class="st">&quot;star-ferry.jpg&quot;</span>)) <span class="st">&quot;inverted.jpg&quot;</span>)</code></pre>
+<h2 id="binary-operations">Binary operations</h2>
+<p>The binary operations are:</p>
+<ul>
+<li><strong>+</strong>: addition</li>
+<li><strong>-</strong>: subtraction</li>
+<li><strong>*</strong>: multiplication</li>
+<li><strong>/</strong>: division</li>
+<li><strong>%</strong>: remainder</li>
+<li><strong>&lt;&lt;</strong>: shift left</li>
+<li><strong>&gt;&gt;</strong>: shift right</li>
+<li><strong>&amp;</strong>: bitwise and</li>
+<li><strong>|</strong>: bitwise or</li>
+<li><strong>^</strong>: bitwise exclusive-or</li>
+<li><strong>&amp;&amp;</strong>: boolean and</li>
+<li><strong>||</strong>: boolean or</li>
+<li><strong>=</strong>: equality</li>
+<li><strong>!=</strong>: unequal</li>
+<li><strong>&lt;</strong>: lower than</li>
+<li><strong>&lt;=</strong>: lower or equal</li>
+<li><strong>&gt;</strong>: greater than</li>
+<li><strong>&gt;=</strong>: greater or equal</li>
+<li><strong>min</strong>: minor value</li>
+<li><strong>max</strong>: major value</li>
+<li><strong>complex</strong>: compose complex number</li>
+</ul>
+<p>Furthermore there is <strong>rgb</strong> for composing RGB values which is a ternary method.</p>
+<p>Each binary operation can combine arrays and/or scalars. Most scalar-scalar operations are already part of the Scheme programming language. <em>AIscm</em> mostly needs to provide a few numerical operations and some support for RGB and complex values.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm int) (aiscm rgb) (aiscm complex))
+(&lt;&lt; <span class="dv">3</span> <span class="dv">2</span>)
+<span class="co">;12</span>
+(% <span class="dv">1234</span> <span class="dv">100</span>)
+<span class="co">;34</span>
+(| <span class="dv">240</span> <span class="dv">15</span>)
+<span class="co">;255</span>
+(<span class="kw">+</span> (rgb <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>) <span class="dv">1</span>)
+<span class="co">;(rgb 3 4 6)</span>
+(<span class="kw">=</span> (rgb <span class="dv">2</span> <span class="dv">2</span> <span class="dv">2</span>) <span class="dv">2</span>)
+<span class="co">;#t</span></code></pre>
+<p>One can use an array-scalar operation to divide each colour channels of an image by a number.</p>
+<div class="figure">
+<img src="divided.jpg" title="Divided image" alt="divided.jpg" /><p class="caption">divided.jpg</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm rgb) (aiscm sequence) (aiscm jit))
+(write-image (<span class="kw">/</span> (read-image <span class="st">&quot;star-ferry.jpg&quot;</span>) (rgb <span class="dv">1</span> <span class="dv">1</span> <span class="dv">2</span>)) <span class="st">&quot;divided.jpg&quot;</span>)</code></pre>
+<p>Another example is using the modulo operator to show the remainder of division by an integer for each channel.</p>
+<div class="figure">
+<img src="modulo.jpg" title="Remainder values" alt="modulo.jpg" /><p class="caption">modulo.jpg</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm rgb) (aiscm jit))
+(write-image (% (read-image <span class="st">&quot;star-ferry.jpg&quot;</span>) (rgb <span class="dv">250</span> <span class="dv">200</span> <span class="dv">150</span>)) <span class="st">&quot;modulo.jpg&quot;</span>)</code></pre>
+<p>Each binary operation can appear in scalar-array, array-scalar, or array-array form. Also note that the arrays can have different number of dimensions as long as the tail of the shape matches.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence) (aiscm element) (aiscm jit))
+(<span class="kw">define</span><span class="fu"> a </span>(arr (<span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span>) (<span class="dv">4</span> <span class="dv">5</span> <span class="dv">6</span>)))
+a
+<span class="co">;#&lt;sequence&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;&gt;:</span>
+<span class="co">;((1 2 3)</span>
+<span class="co">; (4 5 6))</span>
+(shape a)
+<span class="co">;(3 2)</span>
+(<span class="kw">define</span><span class="fu"> b </span>(seq -<span class="dv">1</span> <span class="dv">1</span>))
+b
+<span class="co">;#&lt;sequence&lt;int&lt;8,signed&gt;&gt;&gt;:</span>
+<span class="co">;(-1 1)</span>
+(shape b)
+<span class="co">;(2)</span>
+(<span class="kw">+</span> b <span class="dv">1</span>)
+<span class="co">;#&lt;sequence&lt;int&lt;16,signed&gt;&gt;&gt;:</span>
+<span class="co">;(0 2)</span>
+(<span class="kw">+</span> b b)
+<span class="co">;#&lt;sequence&lt;int&lt;8,signed&gt;&gt;&gt;:</span>
+<span class="co">;(-2 2)</span>
+(<span class="kw">-</span> <span class="dv">1</span> b)
+<span class="co">;#&lt;sequence&lt;int&lt;16,signed&gt;&gt;&gt;:</span>
+<span class="co">;(2 0)</span>
+(* a b)
+<span class="co">;#&lt;sequence&lt;sequence&lt;int&lt;16,signed&gt;&gt;&gt;&gt;:</span>
+<span class="co">;((-1 -2 -3)</span>
+<span class="co">; (4 5 6))</span></code></pre>
+<hr/><em>Generated by Pandoc - 2017-03-27</em>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Jan Wedekind" />
+  <meta name="date" content="2017-03-27" />
+  <title>AIscm - Guile extension for numerical arrays and tensors</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="buttondown.css" type="text/css" />
+</head>
+<body>
+<h1 id="array-manipulation">Array manipulation</h1>
+<h2 id="array-construction">Array construction</h2>
+<p>Arrays can be instantiated using a type specification. Note that the elements are not guaranteed to be initialised:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm int) (aiscm sequence))
+(make (sequence &lt;ubyte&gt;) #:size <span class="dv">100</span>)
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(128 24 172 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ...)</span></code></pre>
+<p>Uniform arrays can also be created from values using type matching:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence))
+(seq -<span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span>)
+<span class="co">;#&lt;sequence&lt;int&lt;8,signed&gt;&gt;&gt;:</span>
+<span class="co">;(-1 2 3 5)</span></code></pre>
+<h2 id="multi-dimensional-arrays">Multi-dimensional arrays</h2>
+<p>It is also possible to instantiate multi-dimensional arrays. Again elements are not guaranteed to be initialised:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm int) (aiscm sequence))
+(make (multiarray &lt;int&gt; <span class="dv">2</span>) #:shape &#39;(<span class="dv">6</span> <span class="dv">4</span>))
+<span class="co">;#&lt;sequence&lt;int&lt;32,signed&gt;&gt;&gt;&gt;:</span>
+<span class="co">;((21701840 0 0 0 0 0)</span>
+<span class="co">; (0 0 0 0 0 0)</span>
+<span class="co">; (0 0 0 0 0 0)</span>
+<span class="co">; (0 0 0 0 0 0))</span></code></pre>
+<p>Uniform multi-dimensional arrays can also be created from values using type matching:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence))
+(arr ((<span class="dv">1</span> <span class="dv">2</span>) (<span class="dv">3</span> <span class="dv">4</span>)) ((<span class="dv">5</span> <span class="dv">6</span>) (<span class="dv">7</span> <span class="dv">8</span>)))
+<span class="co">;#&lt;sequence&lt;sequence&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;&gt;&gt;:</span>
+<span class="co">;(((1 2)</span>
+<span class="co">;  (3 4))</span>
+<span class="co">; ((5 6)</span>
+<span class="co">;  (7 8)))</span></code></pre>
+<h3 id="conversion-fromto-lists">Conversion from/to lists</h3>
+<p>Scheme list objects can be converted to uniform arrays and vice versa using the methods <em>to-array</em> and <em>to-list</em>:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence) (aiscm int) (aiscm rgb))
+(<span class="kw">define</span><span class="fu"> l </span>(<span class="kw">list</span> (<span class="kw">list</span> (rgb <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span>) (rgb <span class="dv">4</span> <span class="dv">5</span> <span class="dv">6</span>)) (<span class="kw">list</span> (rgb <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span>) (rgb <span class="dv">5</span> <span class="dv">6</span> <span class="dv">7</span>))))
+(<span class="kw">define</span><span class="fu"> a </span>(to-array l))
+a
+<span class="co">;#&lt;sequence&lt;sequence&lt;rgb&lt;int&lt;8,unsigned&gt;&gt;&gt;&gt;:</span>
+<span class="co">;(((rgb 1 2 3) (rgb 4 5 6))</span>
+<span class="co">; ((rgb 2 3 4) (rgb 5 6 7)))</span>
+(to-list a)
+<span class="co">;(((rgb 1 2 3) (rgb 2 3 4)) ((rgb 4 5 6) (rgb 5 6 7)))</span></code></pre>
+<p><em>to-array</em> uses type matching to determine the most suitable type.</p>
+<h2 id="dimension-shape-and-strides">Dimension, shape, and strides</h2>
+<p>The <em>dimension</em> is the number of array indices used to select an element. The <em>shape</em> is a list specifying the size of the array in each direction. The <em>stride</em> specifies the internal memory layout of the array.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence) (aiscm int) (aiscm element))
+(<span class="kw">define</span><span class="fu"> a </span>(arr &lt;int&gt; ((<span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span>) (<span class="dv">4</span> <span class="dv">5</span> <span class="dv">6</span>))))
+(dimensions a)
+<span class="co">;3</span>
+(size a)
+<span class="co">;6</span>
+(size-of a)
+<span class="co">;24</span>
+(shape a)
+<span class="co">;(3 2 1)</span>
+(strides a)
+<span class="co">;(1 3 6)</span>
+(get a <span class="dv">1</span> <span class="dv">0</span> <span class="dv">0</span>)
+<span class="co">;2</span>
+(get a <span class="dv">0</span> <span class="dv">0</span>)
+<span class="co">;#&lt;sequence&lt;int&lt;32,signed&gt;&gt;&gt;:</span>
+<span class="co">;(1 2 3)</span></code></pre>
+<p>The array <em>size</em> denotes the number of elements while <em>size-of</em> tells the storage size of the array. The <em>get</em> method can be used to extract elements or array slices.</p>
+<h2 id="boolean-arrays">Boolean arrays</h2>
+<p>Boolean arrays are used to store <em>true</em> and <em>false</em> values. They can be converted to integer arrays and back if required.</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence) (aiscm int) (aiscm bool) (aiscm jit))
+(<span class="kw">define</span><span class="fu"> b </span>(seq <span class="dv">#f</span> <span class="dv">#f</span> <span class="dv">#t</span> <span class="dv">#t</span> <span class="dv">#f</span> <span class="dv">#t</span>))
+b
+<span class="co">;#&lt;sequence&lt;bool&gt;&gt;:</span>
+<span class="co">;(#f #f #t #t #f #t)</span>
+(<span class="kw">define</span><span class="fu"> u </span>(to-type &lt;ubyte&gt; b))
+u
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(0 0 1 1 0 1)</span>
+(to-type &lt;bool&gt; u)
+u
+<span class="co">;#&lt;sequence&lt;bool&gt;&gt;:</span>
+<span class="co">;(#f #f #t #t #f #t)</span></code></pre>
+<h2 id="integer-types">Integer types</h2>
+<p>It is also possible to specify the array type when creating an array from values:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm int) (aiscm sequence))
+(seq &lt;int&gt; <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span>)
+<span class="co">;#&lt;sequence&lt;int&lt;32,signed&gt;&gt;&gt;:</span>
+<span class="co">;(2 3 5 7)</span></code></pre>
+<p>Note that the integer type can be specified using number of bits and signed-ness instead:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm int) (aiscm sequence))
+(seq (integer <span class="dv">32</span> unsigned) <span class="dv">2</span> <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span>)
+<span class="co">;#&lt;sequence&lt;int&lt;32,signed&gt;&gt;&gt;:</span>
+<span class="co">;(2 3 5 7)</span></code></pre>
+<h2 id="rolling-dimensions">Rolling dimensions</h2>
+<p>Given the following image ...</p>
+<div class="figure">
+<img src="pavillion.jpg" title="Test input image" alt="pavillion.jpg" /><p class="caption">pavillion.jpg</p>
+</div>
+<p>... rolling the dimensions will result in the following image:</p>
+<div class="figure">
+<img src="rolled.jpg" title="Dimension rolled" alt="rolled.jph" /><p class="caption">rolled.jph</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm sequence))
+(<span class="kw">define</span><span class="fu"> img </span>(read-image <span class="st">&quot;pavillion.jpg&quot;</span>))
+(write-image (roll img) <span class="st">&quot;rolled.jpg&quot;</span>)</code></pre>
+<p><em>roll</em> and <em>unroll</em> cycle the dimensions of the array around. Here is and example with a 3D array:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm sequence) (aiscm element))
+(<span class="kw">define</span><span class="fu"> a </span>(arr ((<span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span>) (<span class="dv">4</span> <span class="dv">5</span> <span class="dv">6</span>))))
+a
+<span class="co">;#&lt;sequence&lt;sequence&lt;sequence&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;&gt;&gt;&gt;:</span>
+<span class="co">;((((1 2 3)</span>
+<span class="co">;   (4 5 6))))</span>
+(shape a)
+<span class="co">;(3 2 1)</span>
+(roll a)
+<span class="co">;#&lt;sequence&lt;sequence&lt;sequence&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;&gt;&gt;&gt;:</span>
+<span class="co">;(((1 4))</span>
+<span class="co">; ((2 5))</span>
+<span class="co">; ((3 6)))</span>
+(shape (roll a))
+<span class="co">;(2 1 3)</span>
+(unroll a)
+<span class="co">;#&lt;sequence&lt;sequence&lt;sequence&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;&gt;&gt;&gt;:</span>
+<span class="co">;(((1)</span>
+<span class="co">;  (2)</span>
+<span class="co">;  (3))</span>
+<span class="co">; ((4)</span>
+<span class="co">;  (5)</span>
+<span class="co">;  (6)))</span>
+(shape (unroll a))
+<span class="co">;(1 3 2)</span>
+(project (roll a))
+<span class="co">;#&lt;sequence&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;&gt;:</span>
+<span class="co">;((1 4))</span></code></pre>
+<p>The <em>project</em> method can be used to extract the first slice of an array.</p>
+<h2 id="cropping-arrays-and-dumping-elements">Cropping arrays and dumping elements</h2>
+<p>One can <em>dump</em> array slices from the beginning of the array and <em>crop</em> the length of the array, i.e. removing slices from the end of the array.</p>
+<div class="figure">
+<img src="cropped.jpg" title="Cropped image" alt="cropped.jpg" /><p class="caption">cropped.jpg</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm sequence))
+(write-image (crop <span class="dv">200</span> (dump <span class="dv">20</span> (read-image <span class="st">&quot;pavillion.jpg&quot;</span>))) <span class="st">&quot;cropped.jpg&quot;</span>)</code></pre>
+<p>The <em>dump</em> and <em>crop</em> command can also take a list of values in order to extract a part of a multi-dimensional array:</p>
+<div class="figure">
+<img src="crop2d.jpg" title="2d cropped image" alt="crop2d.jpg" /><p class="caption">crop2d.jpg</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm sequence))
+(write-image (crop &#39;(<span class="dv">250</span> <span class="dv">200</span>) (dump &#39;(<span class="dv">27</span> <span class="dv">20</span>) (read-image <span class="st">&quot;pavillion.jpg&quot;</span>))) <span class="st">&quot;crop2d.jpg&quot;</span>)</code></pre>
+<h2 id="rgb-values">RGB values</h2>
+<p>The <em>rgb</em> method can be used to combine colour values and images. The following program swaps the colour channels around:</p>
+<div class="figure">
+<img src="swap-channels.jpg" title="Image with colour channels swapped" alt="swap-channels.jpg" /><p class="caption">swap-channels.jpg</p>
+</div>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm magick) (aiscm rgb))
+(<span class="kw">define</span><span class="fu"> img </span>(read-image <span class="st">&quot;pavillion.jpg&quot;</span>))
+(write-image (rgb (red img) (blue img) (green img)) <span class="st">&quot;swap-channels.jpg&quot;</span>)</code></pre>
+<h2 id="complex-values">Complex values</h2>
+<p>At the moment only integer complex values are supported. Here is a small example using complex arrays:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (aiscm complex) (aiscm sequence) (aiscm int) (aiscm jit))
+(<span class="kw">define</span><span class="fu"> c </span>(seq <span class="dv">2</span>+3i <span class="dv">5</span>+7i))
+c
+<span class="co">;#&lt;sequence&lt;complex&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2.0+3.0i 5.0+7.0i)</span>
+(<span class="kw">real-part</span> c)
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2 5)</span>
+(<span class="kw">imag-part</span> c)
+<span class="co">;#&lt;sequence&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(3 7)</span>
+(complex (seq <span class="dv">2</span> <span class="dv">5</span>) (seq <span class="dv">3</span> <span class="dv">7</span>))
+<span class="co">;#&lt;sequence&lt;complex&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2.0+3.0i 5.0+7.0i)</span>
+(conj c)
+<span class="co">;#&lt;sequence&lt;complex&lt;int&lt;8,unsigned&gt;&gt;&gt;:</span>
+<span class="co">;(2.0+253.0i 5.0+249.0i)</span>
+(conj (to-type (complex &lt;byte&gt;) c))
+<span class="co">;#&lt;sequence&lt;complex&lt;int&lt;8,signed&gt;&gt;&gt;:</span>
+<span class="co">;(2.0-3.0i 5.0-7.0i)</span></code></pre>
+<p>Since native integers are used, numerical overflow can occur. Note that you can use <em>to-type</em> to convert an array to a more suitable type.</p>
+<h2 id="object-arrays">Object arrays</h2>
+<p>It is also possible to use arrays of Scheme objects instead of using a native representation:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (oop goops) (aiscm sequence) (aiscm obj) (aiscm jit))
+(&lt;&lt; <span class="dv">1</span> (* <span class="dv">10</span> (seq &lt;obj&gt; <span class="dv">1</span> <span class="dv">2</span> <span class="dv">4</span> <span class="dv">8</span>)))
+<span class="co">;#&lt;sequence&lt;obj&gt;&gt;:</span>
+<span class="co">;(1024 1048576 1099511627776 1208925819614629174706176)</span></code></pre>
+<hr/><em>Generated by Pandoc - 2017-03-27</em>
+</body>
+</html>
